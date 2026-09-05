@@ -1,0 +1,5 @@
+name = "sakura-scribe"
+
+main = "worker.js"
+
+compatibility_date = "2026-09-04"
