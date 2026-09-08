@@ -13,6 +13,38 @@ export default {
     // DISCORD INTERACTIONS
     // =========================================================
 
+    if (url.pathname === "/register") {
+  const response = await fetch(
+    `https://discord.com/api/v10/applications/${env.DISCORD_GRIMOIRE_APP_ID}/guilds/${env.DISCORD_GRIMOIRE_GUILD_ID}/commands`,
+    {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bot ${env.DISCORD_GRIMOIRE_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: "search",
+        description: "Search the Sakura flower database",
+        options: [
+          {
+            type: 3,
+            name: "flower",
+            description: "Flower name",
+            required: true,
+            autocomplete: true
+          }
+        ]
+      })
+    }
+  );
+
+  return new Response(await response.text(), {
+    status: response.status,
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+}
   if (request.method === "POST") {
 
      const body = await request.text();
