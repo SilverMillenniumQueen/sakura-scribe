@@ -3,3 +3,7 @@ name = "sakura-scribe"
 main = "worker.js"
 
 compatibility_date = "2026-09-04"
+
+[vars]
+DISCORD_GRIMOIRE_APP_ID = "1546623283980533841"
+DISCORD_GRIMOIRE_GUILD_ID = "1527781220279255100"
