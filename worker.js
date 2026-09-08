@@ -22,7 +22,7 @@ export default {
         "Authorization": `Bot ${env.DISCORD_GRIMOIRE_TOKEN}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
+      body: JSON.stringify([{
         name: "search",
         description: "Search the Sakura flower database",
         options: [
@@ -34,7 +34,7 @@ export default {
             autocomplete: true
           }
         ]
-      })
+      }])
     }
   );
 
