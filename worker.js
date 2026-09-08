@@ -2,7 +2,7 @@
 // Original search API + Sakura Grimoire Discord autocomplete
 
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxFRPqhZpsMd1KO3qC1lh8TERgZnBUtfrCedDbOKHoW0DO1SaI1HFWig3SzE50wPZFPIw/exec";
+  "https://script.google.com/macros/s/AKfycbxFRpQhZpsMd1KO3qC1lh8TERgZnBUtfrCedDbOKHoW0DO1SaI1HFWig3SzE50wPZFPIw/exec";
 
 export default {
   async fetch(request, env) {
@@ -13,44 +13,44 @@ export default {
     // DISCORD INTERACTIONS
     // =========================================================
 
-    if (
-      request.method === "POST" &&
-      request.headers.has("X-Signature-Ed25519") &&
-      request.headers.has("X-Signature-Timestamp")
-    ) {
+  if (request.method === "POST") {
 
-      const body = await request.text();
+     const body = await request.text();
 
-      // Verify Discord signature
-      const isValid = await verifyDiscordRequest(
-        body,
-        request.headers.get("X-Signature-Ed25519"),
-        request.headers.get("X-Signature-Timestamp"),
-        env.DISCORD_GRIMOIRE_PUBLIC_KEY
-      );
+let interaction;
 
-      if (!isValid) {
-        return new Response("Invalid request signature", {
-          status: 401
-        });
-      }
+try {
+  interaction = JSON.parse(body);
+} catch {
+  return new Response("Invalid JSON", {
+    status: 400
+  });
+}
 
-      let interaction;
+// Verify Discord signature
 
-      try {
-        interaction = JSON.parse(body);
-      } catch {
-        return new Response("Invalid JSON", {
-          status: 400
-        });
-      }
+const isValid = await verifyDiscordRequest(
+  body,
+  request.headers.get("X-Signature-Ed25519"),
+  request.headers.get("X-Signature-Timestamp"),
+  env.DISCORD_GRIMOIRE_PUBLIC_KEY
+);
 
-      // Discord PING
-      if (interaction.type === 1) {
-        return jsonResponse({
-          type: 1
-        });
-      }
+if (!isValid) {
+  return new Response("Invalid request signature", {
+    status: 401
+  });
+}
+
+// Discord's initial verification PING
+
+if (interaction.type === 1) {
+
+  return jsonResponse({
+    type: 1
+  });
+
+}
 
       // ---------------------------------------------------------
       // AUTOCOMPLETE
