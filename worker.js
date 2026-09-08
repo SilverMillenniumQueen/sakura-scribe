@@ -90,34 +90,36 @@ if (interaction.type === 1) {
 
       if (interaction.type === 4) {
 
-        const focusedOption =
-          interaction.data?.options?.find(option => option.focused);
+  const focusedOption =
+    interaction.data?.options?.find(option => option.focused);
 
-        const searchText =
-          focusedOption?.value?.toString() || "";
+  const searchText =
+    focusedOption?.value?.toString().toLowerCase() || "";
 
-        const results = await getFlowerResults(searchText);
+  const allFlowers = await getAllFlowers();
 
-        const choices = results
-          .map(flower => flower.Flower)
-          .filter(Boolean)
-          .filter((name, index, array) =>
-            array.indexOf(name) === index
-          )
-          .slice(0, 25)
-          .map(name => ({
-            name: name.substring(0, 100),
-            value: name.substring(0, 100)
-          }));
+  const choices = allFlowers
+    .filter(flower =>
+      flower.Flower?.toString().toLowerCase().includes(searchText)
+    )
+    .map(flower => flower.Flower)
+    .filter(Boolean)
+    .filter((name, index, array) =>
+      array.indexOf(name) === index
+    )
+    .slice(0, 25)
+    .map(name => ({
+      name: name.substring(0, 100),
+      value: name.substring(0, 100)
+    }));
 
-        return jsonResponse({
-          type: 8,
-          data: {
-            choices
-          }
-        });
-      }
-
+  return jsonResponse({
+    type: 8,
+    data: {
+      choices
+    }
+  });
+}
       // ---------------------------------------------------------
       // NORMAL /search COMMAND
       // ---------------------------------------------------------
@@ -300,7 +302,43 @@ if (interaction.type === 1) {
 // =============================================================
 // GET FLOWERS FROM GOOGLE SHEETS
 // =============================================================
+let flowerCache = null;
+let flowerCacheTime = 0;
 
+async function getAllFlowers() {
+  const now = Date.now();
+
+  // Keep the flower list cached for 5 minutes.
+  if (flowerCache && now - flowerCacheTime < 300000) {
+    return flowerCache;
+  }
+
+  const response = await fetch(
+    APPS_SCRIPT_URL + "?search=",
+    {
+      redirect: "follow"
+    }
+  );
+
+  if (!response.ok) {
+    return [];
+  }
+
+  try {
+    const data = await response.json();
+
+    flowerCache =
+      Array.isArray(data)
+        ? data
+        : data.response || [];
+
+    flowerCacheTime = now;
+
+    return flowerCache;
+  } catch {
+    return [];
+  }
+}
 async function getFlowerResults(searchText) {
 
   const response = await fetch(
