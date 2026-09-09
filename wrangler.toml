@@ -1,4 +1,4 @@
-name = "sakura-scribe"
+name = "sakura-scribe-tasks"
 
 main = "worker.js"
 
@@ -7,3 +7,7 @@ compatibility_date = "2026-09-04"
 [vars]
 DISCORD_GRIMOIRE_APP_ID = "1546623283980533841"
 DISCORD_GRIMOIRE_GUILD_ID = "1527781220279255100"
+
+[[queues.producers]]
+queue = "cdcefbaa37a848609c725654e5a681d5"
+binding = "TASK_QUEUE"
